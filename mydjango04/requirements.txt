@@ -1,0 +1,7 @@
+django~=4.2.10
+django-bootstrap5==23.3
+django-debug-toolbar==4.2.0
+# hottrack app
+requests==2.31.0
+pillow==10.1.0
+pandas==2.1.3
