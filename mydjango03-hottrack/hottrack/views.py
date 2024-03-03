@@ -1,4 +1,5 @@
 import json
+import datetime
 from urllib.request import urlopen
 
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
@@ -11,7 +12,7 @@ from typing import Literal
 import pandas as pd
 
 
-def index(request: HttpRequest) -> HttpResponse:
+def index(request: HttpRequest, release_date: datetime.date = None) -> HttpResponse:
     query = request.GET.get("query", "").strip()
     song_qs: QuerySet = Song.objects.all()
 
@@ -21,6 +22,9 @@ def index(request: HttpRequest) -> HttpResponse:
             | Q(artist_name__icontains=query)
             | Q(album_name__icontains=query)
         )
+
+    if release_date:
+        song_qs = song_qs.filter(release_date=release_date)
 
     return render(
         request=request,

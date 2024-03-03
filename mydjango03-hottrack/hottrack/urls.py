@@ -1,5 +1,6 @@
 from django.urls import path, re_path
 from . import views
+from . import converters
 
 urlpatterns = [
     path(route="", view=views.index),
@@ -9,4 +10,5 @@ urlpatterns = [
     re_path(
         route=r"^export\.(?P<format>(csv|xlsx))$", view=views.export, name="export"
     ),
+    path(route="archives/<date:release_date>/", view=views.index),
 ]
