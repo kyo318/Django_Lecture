@@ -1,5 +1,5 @@
+{% load django_bootstrap5 %}
 {# 경로 : hottrack/templates/hottrack/index.html #}
-
 <!doctype html>
 <html lang="ko" data-bs-theme="dark">
 
@@ -89,6 +89,10 @@
                 {% include "hottrack/_song.html" %}
               </div>
             {% endfor %}
+          </div>
+          {% comment %} {% include "hottrack/_pagination.html" %} {% endcomment %}
+          <div class="my-5 d-flex justify-content-center">
+            {% bootstrap_pagination page_obj %}
           </div>
         </div>
       </div>
