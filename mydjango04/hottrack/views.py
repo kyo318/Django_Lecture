@@ -16,6 +16,9 @@ from django.views.generic import (
     YearArchiveView,
     MonthArchiveView,
     DayArchiveView,
+    WeekArchiveView,
+    ArchiveIndexView,
+    DateDetailView,
 )
 
 
@@ -177,6 +180,33 @@ class SongMonthArchiveView(MonthArchiveView):
 
 
 class SongDayArchiveView(DayArchiveView):
+    model = Song
+    date_field = "release_date"
+    month_format = "%m"
+
+
+class SongWeekArchiveView(WeekArchiveView):
+    model = Song
+    date_field = "release_date"
+
+    week_format = "%W"
+
+
+class SongArchiveIndexView(ArchiveIndexView):
+    model = Song
+    date_field = "release_date"
+    paginate_by = 10
+
+    def get_date_list_period(self):
+        return self.kwargs.get("date_list_period", self.date_list_period)
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data["date_list_period"] = self.get_date_list_period()
+        return context_data
+
+
+class SongDateDetailView(DateDetailView):
     model = Song
     date_field = "release_date"
     month_format = "%m"
