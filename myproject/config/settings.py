@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-c^-symfa#=)$*tm6413p#)x6hs6*5x_nw53hcz4l2=pb)ioig+"
+SECRET_KEY = "django-insecure-@uvgn%$y&z@mvtjbhfs#670m2eq42d3w9odmou=7wn&4e7^26d"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,14 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "hottrack",
-    "core",
-    "blog",
-    "shop",
-    "accounts",
     "django_bootstrap5",
     "django_extensions",
-    "school",
+    "matsim",
 ]
 
 if DEBUG:
@@ -80,12 +75,10 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "core.context_processors.messages_list",
             ],
         },
     },
 ]
-
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -93,22 +86,20 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# import pymysql
-# pymysql.install_as_MySQLdb()
+import pymysql
 
+pymysql.install_as_MySQLdb()
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.db.backends.mysql",
         "HOST": "localhost",
-        "PORT": "5432",
-        "NAME": "mydb",
-        "USER": "myuser",
-        "PASSWORD": "mypw",
+        "PORT": "3306",
+        "NAME": "mysql_db",
+        "USER": "mysql_user",
+        "PASSWORD": "mysql_pw",  # 암호
     }
 }
-
-AUTH_USER_MODEL = "accounts.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

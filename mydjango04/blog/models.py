@@ -3,6 +3,10 @@ from django.db.models import UniqueConstraint
 from django.conf import settings
 from django.utils.text import slugify
 from uuid import uuid4
+from core.model_fields import IPv4AddressIntegerField, BooleanYNField
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Q
+from django.db.models.functions import Lower
 
 # class PublishedPostManager(models.Manager):
 #     def get_queryset(self) -> models.QuerySet:
@@ -13,6 +17,14 @@ from uuid import uuid4
 #     def create(self, **kwargs):
 #         kwargs.setdefault("status", Post.Status.PUBLISHED)
 #         return super().create(**kwargs)
+
+
+class TimestampedModel(models.Model):
+    create_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
 
 
 class PostQuerySet(models.QuerySet):
@@ -39,14 +51,19 @@ class Category(models.Model):
 
 
 # Create your models here.
-class Post(models.Model):
+class Post(TimestampedModel):
 
     class Status(models.TextChoices):
         DRAFT = "D", "초안"
         PUBLISHED = "P", "발행"
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="blog_post_set",
+        related_query_name="blog_post",
+    )
     title = models.CharField(max_length=100)
     status = models.CharField(
         max_length=1,
@@ -54,14 +71,20 @@ class Post(models.Model):
         default=Status.DRAFT,
     )
     content = models.TextField()
-
-    create_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(
         max_length=120, allow_unicode=True, help_text="title로부터 자동 생성"
     )
     # published = PublishedPostManager()
     # objects = models.Manager()
+    tag_set = models.ManyToManyField(
+        "Tag",
+        related_name="blog_post_set",
+        related_query_name="blog_post",
+        blank=True,
+        through="PostTagRelation",
+        through_fields=("post", "tag"),
+    )
+
     objects = PostQuerySet.as_manager()
 
     def __str__(self):
@@ -79,3 +102,109 @@ class Post(models.Model):
 
     class Meta:
         constraints = [UniqueConstraint(fields=["slug"], name="unique_slug")]
+        verbose_name = "포스팅"
+        verbose_name_plural = "포스팅 목록"
+        permissions = [
+            ("view_premium_post", "프리미엄 포스팅을 볼 수 있음"),
+        ]
+
+
+class AccessLog(TimestampedModel):
+    ip_generic = models.GenericIPAddressField(protocol="IPv4")
+    ip_int = IPv4AddressIntegerField()
+
+
+class Article(TimestampedModel):
+    title = models.CharField(max_length=100)
+    is_public_ch = models.CharField(
+        max_length=1,
+        choices=[("Y", "Yes"), ("N", "No")],
+        default="N",
+    )
+
+    is_public_yn = BooleanYNField(default=False)
+
+
+class Review(TimestampedModel):
+    message = models.TextField()
+    rating = models.SmallIntegerField(
+        # validators=[
+        #     MinValueValidator(1),
+        #     MaxValueValidator(5),
+        # ],
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(rating__gte=1, rating__lte=5),
+                name="blog_review_rating_gte_1_lte_5",
+            ),
+        ]
+        db_table_comment = "사용자 리뷰와 평점을 저장하는 테이블"
+
+
+class Tag(TimestampedModel):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(Lower("name"), name="blog_tag_name_uniq"),
+        ]
+        indexes = [
+            models.Index(
+                fields=["name"],
+                name="blog_tag_name_like",
+                opclasses=["varchar_pattern_ops"],
+            )
+        ]
+
+
+class PostTagRelation(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    # 관계 모델을 통해, 관계에 대한 추가 정보를 담을 수 있습니다.
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["post", "tag"],
+                name="blog_post_tag_relation_unique",
+            )
+        ]
+
+
+class Comment(TimestampedModel):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+    message = models.TextField()
+
+
+class Student(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Course(models.Model):
+    title = models.CharField(max_length=100)
+
+
+class Enrollment(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    semester = models.CharField(max_length=10)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                "student",
+                "course",
+                Lower("semester"),  # 다수의 expression 지정
+                # fields=["student", "course", "semester"],  # 단순 필드명 나열
+                name="blog_enrollment_uniq",
+            ),
+        ]

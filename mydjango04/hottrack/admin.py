@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Song
 from .utils.melon import get_likes_dict
+from .filter import ReleaseDateFilter
 
 
 @admin.register(Song)
@@ -15,7 +16,7 @@ class SongAdmin(admin.ModelAdmin):
         "like_count",
         "release_date",
     ]
-    list_filter = ["genre"]
+    list_filter = ["genre", ReleaseDateFilter]
     actions = ["update_like_count"]
 
     def update_like_count(self, request, queryset):
