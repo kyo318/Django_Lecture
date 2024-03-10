@@ -1,5 +1,5 @@
-{% load django_bootstrap5 %}
 {# 경로 : hottrack/templates/hottrack/index.html #}
+
 <!doctype html>
 <html lang="ko" data-bs-theme="dark">
 
@@ -44,7 +44,6 @@
           </div>
         </div>
       </div>
-
       <div class="navbar navbar-dark bg-dark shadow-sm">
         <div class="container">
           <a href="#" class="navbar-brand d-flex align-items-center">
@@ -54,8 +53,9 @@
             </svg>
             <strong>HotTrack</strong>
           </a>
-          <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-            <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." name="query" value="{{ request.GET.query }}" autofocus="autofocus" autocomplete="off">
+
+          <form action="/hottrack/" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+            <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="검색어를 입력해주세요." name="query" value="{{ request.GET.query }}" {# value="{{ query }}" #}/>
           </form>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -65,13 +65,30 @@
     </header>
 
     <main>
-
       <section class="py-5 text-center container">
         <div class="row py-lg-5">
           <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">HotTrack</h1>
-            <p class="lead text-body-secondary">
-              HotTrack에서 최신 K-POP 트렌드를 한 눈에! 실시간 차트, 뜨거운 뮤직 비디오, 가장 핫한 아티스트까지, K-POP의 모든 것을 만나보세요.
+            <div class="card bg-dark text-white">
+              <img src="{{ song.cover_url }}" class="card-img-top" alt="Album Cover">
+              <div class="card-body">
+                <h1 class="card-title">{{ song.name }}</h1>
+                <p class="card-text">{{ song.album.name }}
+                  -
+                  {{ song.artist.name }}</p>
+                <p class="card-text">{{ song.genre }}</p>
+                <p class="card-text">{{ song.release_date }}</p>
+                <p class="card-text">
+                  <small class="text-muted">Likes:
+                    {{ song.like_count }}</small>
+                </p>
+                <div class="btn-group">
+                  <a href="{{ song.melon_detail_url }}" type="button" class="btn btn-sm btn-outline-danger">Melon</a>
+                  <a href="{{ song.youtube_search_url }}" type="button" class="btn btn-sm btn-outline-danger">Youtube</a>
+                </div>
+              </div>
+            </div>
+            <p class="lead text-muted mt-3">
+              {{ song.lyrics|linebreaks }}
             </p>
             <p>
               <a href="#" class="btn btn-primary my-2">Signup</a>
@@ -80,23 +97,6 @@
           </div>
         </div>
       </section>
-
-      <div class="album py-5 bg-body-tertiary">
-        <div class="container">
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            {% for song in song_list %}
-              <div class="col">
-                {% include "hottrack/_song.html" %}
-              </div>
-            {% endfor %}
-          </div>
-          {% comment %} {% include "hottrack/_pagination.html" %} {% endcomment %}
-          <div class="my-5 d-flex justify-content-center">
-            {% bootstrap_pagination page_obj %}
-          </div>
-        </div>
-      </div>
-
     </main>
 
     <footer class="text-body-secondary py-5">
