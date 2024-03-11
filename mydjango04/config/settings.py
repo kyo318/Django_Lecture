@@ -42,9 +42,10 @@ INSTALLED_APPS = [
     "blog",
     "shop",
     "accounts",
+    "weblog",
+    "school",
     "django_bootstrap5",
     "django_extensions",
-    "school",
 ]
 
 if DEBUG:
