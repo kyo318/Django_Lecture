@@ -7,6 +7,8 @@ from core.model_fields import IPv4AddressIntegerField, BooleanYNField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Q
 from django.db.models.functions import Lower
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 # class PublishedPostManager(models.Manager):
 #     def get_queryset(self) -> models.QuerySet:
@@ -96,9 +98,9 @@ class Post(TimestampedModel):
             self.slug = self.slug[:112]
             self.slug += "-" + uuid4().hex[:8]
 
-    def save(self, *args, **kwargs):
-        self.slugify()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.slugify()
+    #     super().save(*args, **kwargs)
 
     class Meta:
         constraints = [UniqueConstraint(fields=["slug"], name="unique_slug")]
@@ -112,6 +114,12 @@ class Post(TimestampedModel):
 class AccessLog(TimestampedModel):
     ip_generic = models.GenericIPAddressField(protocol="IPv4")
     ip_int = IPv4AddressIntegerField()
+
+
+@receiver(pre_save, sender=Post)
+def pre_save_on_save(sender, instance: Post, **kwargs):
+    print("pre_save_on_save 메서드가 호출 되었습니다.")
+    instance.slugify()
 
 
 class Article(TimestampedModel):
