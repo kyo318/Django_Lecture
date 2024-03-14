@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Range Slider</title>
+    <!-- noUiSlider CSS -->
+    <link rel="stylesheet" href="./assets/nouislider/nouislider.css">
+    <!-- Bootstrap CSS (optional, for styling) -->
+    <style>
+      /* Optional custom styles */
+      #slider-round {
+        height: 10px;
+      }
+
+      #slider-round .noUi-connect {
+        background: #c0392b;
+      }
+
+      #slider-round .noUi-handle {
+        height: 18px;
+        width: 18px;
+        top: -5px;
+        right: -9px;
+        /* half the width */
+        border-radius: 9px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Dual Range Slider Container -->
+    <div class="slider-styled" id="slider-round"></div>
+
+    <!-- noUiSlider JavaScript -->
+    <script src="./assets/nouislider/nouislider.js"></script>
+    <!-- Bootstrap JS (optional, for layout) -->
+
+    <script>
+      // Initialize the dual-range slider
+      var slider = document.getElementById('slider-round');
+
+      noUiSlider.create(slider, {
+        start: [
+          20, 80
+        ], // Initial values for the two controllers
+        connect: true,
+        range: {
+          'min': 0,
+          'max': 100
+        }
+      });
+    </script>
+  </body>
+
+</html>
