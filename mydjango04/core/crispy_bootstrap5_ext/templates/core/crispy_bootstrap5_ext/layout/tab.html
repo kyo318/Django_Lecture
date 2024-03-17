@@ -1,0 +1,15 @@
+{# core/crispy_bootstrap5_ext/templates/core/crispy_bootstrap5_ext/layout/tab.html #}
+
+{# crispy_bootstrap5의 TabHolder 템플릿 #}
+{% include "bootstrap5/layout/tab.html" %}
+
+{# 기존 템플릿 코드를 복제하면 관리 포인트가 늘어나기에, 복제하지 않고 script를 통해 CSS 적용 #}
+<script>
+  (function () {
+    const prevDom = document.currentScript.previousElementSibling;
+    const names = 'mb-3 px-2 pt-1 border-start border-end border-bottom'.split(' ');
+    prevDom
+      .classList
+      .add(...names);
+  })();
+</script>

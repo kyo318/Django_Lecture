@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.urls import reverse
 
 # class PublishedPostManager(models.Manager):
 #     def get_queryset(self) -> models.QuerySet:
@@ -133,25 +134,6 @@ class Article(TimestampedModel):
     is_public_yn = BooleanYNField(default=False)
 
 
-class Review(TimestampedModel):
-    message = models.TextField()
-    rating = models.SmallIntegerField(
-        # validators=[
-        #     MinValueValidator(1),
-        #     MaxValueValidator(5),
-        # ],
-    )
-
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=Q(rating__gte=1, rating__lte=5),
-                name="blog_review_rating_gte_1_lte_5",
-            ),
-        ]
-        db_table_comment = "사용자 리뷰와 평점을 저장하는 테이블"
-
-
 class Tag(TimestampedModel):
     name = models.CharField(max_length=100)
 
@@ -216,3 +198,43 @@ class Enrollment(models.Model):
                 name="blog_enrollment_uniq",
             ),
         ]
+
+
+class Review(TimestampedModel):
+    message = models.TextField()
+    rating = models.SmallIntegerField(
+        # validators=[
+        #     MinValueValidator(1),
+        #     MaxValueValidator(5),
+        # ],
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(rating__gte=1, rating__lte=5),
+                name="blog_review_rating_gte_1_lte_5",
+            ),
+        ]
+        db_table_comment = "사용자 리뷰와 평점을 저장하는 테이블"
+
+    def get_absolute_url(self):
+        return reverse("blog:review_detail", args=[self.pk])
+
+
+class MemoGroup(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Memo(models.Model):
+    class Status(models.TextChoices):
+        PRIVATE = "V", "비공개"
+        PUBLIC = "P", "공개"
+
+    # author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    group = models.ForeignKey(MemoGroup, on_delete=models.CASCADE)
+    message = models.CharField(max_length=140)
+    status = models.CharField(
+        max_length=1, default=Status.PUBLIC, choices=Status.choices
+    )
+    created_at = models.DateTimeField(auto_now_add=True)

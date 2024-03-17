@@ -1,0 +1,11 @@
+{% include "django/forms/widgets/date.html" %}
+
+<script>
+  (function () {
+    const dateDom = document.currentScript.previousElementSibling;
+    dateDom.setAttribute("autocomplete", "off");
+    dateDom.setAttribute("readonly", "readonly");
+    const options = { format: "yyyy-mm-dd" };
+    const datePicker = new Datepicker(dateDom, options);
+  })();
+</script>

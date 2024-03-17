@@ -10,11 +10,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+from environ import Env
+
+env = Env()
+
+ENV_PATH = BASE_DIR / ".env"
+if ENV_PATH.exists():
+    with ENV_PATH.open(encoding="utf-8") as f:
+        env.read_env(f, overwrite=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -47,12 +56,20 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "django_extensions",
     "vanilla",
+    "widget_tweaks",
+    "crispy_forms",
+    "crispy_bootstrap5",
+    "core.crispy_bootstrap5_ext",
+    "formtools",
 ]
 
 if DEBUG:
     INSTALLED_APPS += [
         "debug_toolbar",
     ]
+
+# DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -91,7 +108,8 @@ TEMPLATES = [
         },
     },
 ]
-
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -151,7 +169,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "config", "static"),
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -163,3 +183,12 @@ if DEBUG:
     MESSAGE_LEVEL = messages_constants.DEBUG
 
 INTERNAL_IPS = ["127.0.0.1"]
+
+if DEBUG:
+    FORM_RENDERER = "core.forms.renderers.NoCacheDjangoTemplates"
+
+    INSTALLED_APPS += [
+        "django.forms",
+    ]
+
+NAVER_MAP_POINT_WIDGET_CLIENT_ID = env.str("NAVER_MAP_POINT_WIDGET_CLIENT_ID")

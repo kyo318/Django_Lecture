@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.core.validators import RegexValidator
 
 
 class User(AbstractUser):
@@ -53,8 +54,14 @@ class Profile(models.Model):
     )
     address = models.CharField(max_length=100, blank=True)
     point = models.PositiveIntegerField(default=0)
-
+    phone_number = models.CharField(
+        max_length=13,
+        blank=True,
+        validators=[RegexValidator(r"^01\d[ -]?\d{4}[ -]?\d{4}$")],
+    )
     photo = models.ImageField(upload_to="profile/photo", blank=True)
+    birth_date = models.DateField(blank=True, null=True)
+    location_point = models.CharField(max_length=50, blank=True)
 
 
 @receiver(post_delete, sender=Profile)

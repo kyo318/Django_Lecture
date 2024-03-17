@@ -1,5 +1,11 @@
 from django import forms
 from weblog.models import Post
+from core.forms.widgets import (
+    CounterTextInput,
+    IosSwitchInput,
+    PreviewClearableFileInput,
+)
+
 
 # class PostForm(forms.Form):
 #     title = forms.CharField()
@@ -16,7 +22,12 @@ from weblog.models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ["title", "content", "status", "photo", "tag_set"]
+        fields = ["title", "content", "status", "photo", "tag_set", "is_public"]
+        widgets = {
+            "title": CounterTextInput,
+            "is_public": IosSwitchInput,
+            "photo": PreviewClearableFileInput,
+        }
 
 
 class ConfirmDeleteForm(forms.Form):

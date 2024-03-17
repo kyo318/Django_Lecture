@@ -12,6 +12,7 @@ urlpatterns = [
     path("", RedirectView.as_view(pattern_name="hottrack:index")),
     path("weblog/", include("weblog.urls")),
     path("shop/", include("shop.urls")),
+    path("accounts/", include("accounts.urls")),
 ]
 
 if settings.DEBUG:

@@ -30,6 +30,7 @@ class Post(models.Model):
         related_query_name="weblog_post",
         blank=True,
     )
+    is_public = models.BooleanField(default=False)
 
     def get_absolute_url(self) -> str:
         return reverse("weblog:post_detail", args=[self.pk])

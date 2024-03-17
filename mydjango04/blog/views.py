@@ -1,9 +1,18 @@
+from django.forms import formset_factory, modelformset_factory, inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
-from blog.models import Post
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
 from django.core.files import File
+from django.urls import reverse_lazy
+from vanilla import CreateView, FormView, UpdateView
+from accounts.forms import UserForm, UserProfileForm
+from accounts.models import Profile, User
+from blog.models import Memo, MemoGroup, Post, Review
+from blog.forms import DemoForm, ReviewForm, MemoForm
+from django.views.generic import ListView, DetailView
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 
 
 # Create your views here.
@@ -75,5 +84,148 @@ def post_new(request):
             "message": message,
             "photo": photo,
             "errors": errors,
+        },
+    )
+
+
+review_list = ListView.as_view(model=Review)
+
+review_detail = DetailView.as_view(model=Review)
+
+review_edit = UpdateView.as_view(
+    model=Review,
+    form_class=ReviewForm,
+)
+review_new = CreateView.as_view(
+    model=Review,
+    form_class=ReviewForm,
+)
+
+demo_form = FormView.as_view(
+    form_class=DemoForm,
+    template_name="blog/demo_form.html",
+)
+
+
+# memo_new = FormView.as_view(
+#     form_class=MemoForm,
+#     template_name="blog/memo_form.html",
+#     success_url=reverse_lazy("blog:memo_new"),
+# )
+# def memo_new(request):
+#     MemoFormSet = formset_factory(
+#         form=MemoForm,
+#         extra=3,
+#     )
+#     if request.method == "GET":
+#         formset = MemoFormSet()
+
+#     else:
+#         print(request.POST)
+#         formset = MemoFormSet(data=request.POST, files=request.FILES)
+
+#         if formset.is_valid():
+
+#             memo_list = []
+#             for form in formset:
+#                 if form.has_changed():
+#                     memo = Memo(
+#                         message=form.cleaned_data["message"],
+#                         status=form.cleaned_data["status"],
+#                     )
+#                     memo_list.append(memo)
+
+#             objs = Memo.objects.bulk_create(memo_list)
+
+#             print("formset.cleaned_data :", formset.cleaned_data)
+#             messages.success(request, f"메모 {len(objs)}개를 입력받았습니다.")
+#             return redirect("blog:memo_new")
+
+#     return render(
+#         request,
+#         "blog/memo_form.html",
+#         {
+#             "formset": formset,
+#         },
+#     )
+
+
+@login_required
+def memo_form(request, group_pk):
+    MemoFormSet = inlineformset_factory(
+        parent_model=MemoGroup,
+        model=Memo,
+        form=MemoForm,
+    )
+
+    memo_group = get_object_or_404(MemoGroup, pk=group_pk)
+    queryset = None
+    if request.method == "GET":
+        formset = MemoFormSet(queryset=queryset, instance=memo_group)
+    else:
+        formset = MemoFormSet(
+            data=request.POST,
+            files=request.FILES,
+            queryset=queryset,
+            instance=memo_group,
+        )
+        if formset.is_valid():
+            objs = formset.save()
+
+            if objs:
+                messages.success(request, f"메모 {len(objs)}개를 저장했습니다")
+            if formset.deleted_objects:
+                messages.success(
+                    request, f"메모 {len(formset.deleted_objects)}개를 삭제했습니다"
+                )
+            return redirect("blog:memo_form", group_pk)
+    return render(
+        request,
+        "blog/memo_form.html",
+        {
+            "formset": formset,
+            "memo_group": memo_group,
+        },
+    )
+
+
+@login_required
+def profile_edit(request):
+    user_instance = request.user
+    try:
+        profile_instance = request.user.profile
+    except Profile.DoesNotExist:
+        profile_instance = None
+    if request.method == "GET":
+        user_form = UserForm(prefix="user", instance=user_instance)
+        profile_form = UserProfileForm(
+            prefix="profile",
+            instance=profile_instance,
+        )
+    else:
+        user_form = UserForm(
+            prefix="user",
+            instance=user_instance,
+            data=request.POST,
+            files=request.FILES,
+        )
+
+        profile_form = UserProfileForm(
+            prefix="profile",
+            instance=profile_instance,
+            data=request.POST,
+            files=request.FILES,
+        )
+    if user_form.is_valie() and profile_form.is_valid():
+        user_form.save()
+        profile = profile_form.save(commit=False)
+        profile.user = request.user
+        profile.save()
+        return redirect("accounts:profile_edit")
+    return render(
+        request,
+        "accounts/profile_form.html",
+        {
+            "profile_form": profile_form,
         },
     )

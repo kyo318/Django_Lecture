@@ -1,0 +1,9 @@
+{% include "django/forms/widgets/select.html" %}
+
+<script>
+  (function () {
+    const selectDom = document.currentScript.previousElementSibling;
+    const options = {};
+    const starRating = new StarRating(selectDom, options);
+  })();
+</script>
