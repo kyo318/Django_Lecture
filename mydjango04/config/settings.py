@@ -16,6 +16,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+from django.urls import reverse_lazy
 from environ import Env
 
 env = Env()
@@ -134,12 +135,15 @@ DATABASES = {
 
 AUTH_USER_MODEL = "accounts.User"
 
+
+LOGIN_REDIRECT_URL = reverse_lazy("accounts:profile")
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "OPTIONS": {"max_similarity": 0.5},
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -151,6 +155,26 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+from django.core.exceptions import ImproperlyConfigured
+import sys
+
+EMAIL_HOST = env.str("EMAIL_HOST")
+
+if DEBUG and EMAIL_HOST is None:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    try:
+        EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+        EMAIL_PORT = env.int("EMAIL_PORT")
+        EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
+        EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
+        EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+        EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+        DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
+    except ImproperlyConfigured as e:
+        print("ERROR:", e, file=sys.stderr)
+        EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 
 # Internationalization

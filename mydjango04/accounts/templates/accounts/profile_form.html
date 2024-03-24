@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Document</title>
     <style>
       form#django-form table {
@@ -26,24 +27,21 @@
         list-style-type: none;
       }
     </style>
-    {{ form.media }}
+    {{ profile_user_form.media }}
+    {{ profile_form.media }}
   </head>
 
   <body>
     <h2>프로필 수정 폼</h2>
 
-    <form
-      id="django-form"
-      action=""
-      method="post"
-      novalidate="novalidate"
-      enctype="multipart/form-data"
-    >
+    <form id="django-form" action="" method="post" enctype="multipart/form-data" novalidate="novalidate">
       {% csrf_token %}
       <table>
-        {{ form.as_table}}
+        {{ profile_user_form.as_table }}
+        {{ profile_form.as_table }}
       </table>
-      <input type="submit" value="제출하기" />
+      <input type="submit"/>
     </form>
   </body>
+
 </html>

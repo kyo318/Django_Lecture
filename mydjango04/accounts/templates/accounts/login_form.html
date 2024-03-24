@@ -1,0 +1,15 @@
+{% comment %} <form action="" method="post" novalidate="novalidate">
+  {% csrf_token %}
+  <input type="text" name="username">
+  <input type="password" name="password">
+  <input type="submit" name="제출">
+</form> {% endcomment %}
+
+<form action="" method="POST" novalidate>
+  {% csrf_token %}
+  <table>
+    {{form.as_table}}
+  </table>
+  <input type="submit">
+
+</form>
