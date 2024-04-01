@@ -1,0 +1,25 @@
+{% load static component_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PJT Name</title>
+  <link rel="stylesheet" href="{% static 'bootstrap/5.2.3/css/bootstrap.min.css' %}">
+
+  {% component_css_dependencies %}
+  
+</head>
+<body hx-headers="{'X-CSRFToken' : '{{ csrf_token }}'}">
+  <h1>PJT Name</h1>
+  {% block content %}{% endblock %}
+  <hr/>
+  <script src="{% static 'htmx/1.9.11/htmx.min.js' %}"></script>
+  <script src="{% static 'bootstrap/5.2.3/js/bootstrap.bundle.js' %}"></script>
+  {%component_js_dependencies %}
+  <script src="{% static 'toast-messages.js' %}"></script>
+
+  {% include "_messages_as_event.html" %}
+
+</body>
+</html>

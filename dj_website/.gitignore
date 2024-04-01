@@ -1,0 +1,7 @@
+.idea
+.env
+venv
+db.sqlite3
+__pycache__
+.DS_Store
+.python-version
