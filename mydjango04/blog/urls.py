@@ -24,4 +24,10 @@ urlpatterns = [
     path("reviews/<int:pk>/edit", views.review_edit, name="review_edit"),
     path("demo/", views.demo_form, name="demo_form"),
     path("memogroup/<int:group_pk>/form/", views.memo_form, name="memo_form"),
+    path("tags/", views.tag_list, name="tag_list"),
+    path("tags/new/", views.tag_new, name="tag_new"),
+    path("test/", views.test, name="test"),
+    path("tags/<int:pk>/delete/", views.tag_delete, name="tag_delete"),
+    path("tags/<int:pk>/edit/", views.tag_edit, name="tag_edit"),
+    path("tags/item/<int:pk>/", views.tag_list_item, name="tag_list_item"),
 ]

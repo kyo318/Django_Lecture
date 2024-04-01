@@ -1,0 +1,25 @@
+{% load django_bootstrap5 %}
+
+{% comment %} {% bootstrap_messages %} {% endcomment %}
+{% include "core/_messages_as_event.html" %}
+
+<div class="list-group-item d-flex justify-content-between aligh-items-center">
+  <div style="cursor: pointer;"
+      hx-get="{% url 'blog:tag_edit' tag.pk %}"
+      hx-trigger="click"
+      hx-target="#modal-container"
+      hx-swap="innerHTML"
+      >
+  {{ tag.name }}
+  </div>
+  <span
+      class="text-danger"
+      style="cursor: pointer;"
+      hx-trigger="click"
+      hx-confirm="{{ tag.name }} 태그를 삭제하시겠습니까?"
+      hx-delete="{% url 'blog:tag_delete' tag.pk %}"
+      hx-swap="delete"
+      hx-target="closest .list-group-item"
+>
+X 
+</span>

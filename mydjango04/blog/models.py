@@ -151,6 +151,7 @@ class Tag(TimestampedModel):
                 opclasses=["varchar_pattern_ops"],
             )
         ]
+        ordering = ["-pk"]
 
 
 class PostTagRelation(models.Model):

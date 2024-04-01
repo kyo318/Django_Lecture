@@ -1,5 +1,5 @@
 from django import forms
-from .models import Memo, Review
+from .models import Memo, Review, Tag
 from core.forms.widgets import StarRatingSelect
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from crispy_forms.helper import FormHelper
@@ -82,3 +82,9 @@ class MemoForm(forms.ModelForm):
     class Meta:
         model = Memo
         fields = ["message", "status"]
+
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = ["name"]

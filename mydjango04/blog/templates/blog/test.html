@@ -1,0 +1,33 @@
+{% load component_tags %}
+
+<!doctype html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8"/>
+    <title>vanilla js</title>
+    {% component_css_dependencies %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.11/htmx.min.js"></script>
+  </head>
+  <body>
+    {% component "hello-world" name="파이썬" %} {% endcomponent %}
+    {% component "hello-world" name="장고" %} {% endcomponent %}
+    {% component "hello-world" %} {% endcomponent %}
+
+		{% comment %} {% include "components-pure/hello-world.html" with name="파이썬" %}
+
+		{% with name="장고" %}
+			{% include "components-pure/hello-world.html" %}
+		{% endwith %}
+		
+		{% include "components-pure/hello-world.html" %} {% endcomment %}
+
+    <button hx-get="{% url 'blog:tag_list'%}" hx-trigger="click" hx-target="#tag-list-container" hx-swap="innerHTML">
+      새로고침
+    </button>
+
+    <div id="tag-list-container"></div>
+    {% component_js_dependencies %}
+  </body>
+
+</html>

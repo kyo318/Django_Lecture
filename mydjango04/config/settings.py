@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    "django_components",
+    "django_components.safer_staticfiles",
     "hottrack",
     "core",
     "blog",
@@ -62,6 +63,9 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "core.crispy_bootstrap5_ext",
     "formtools",
+    "django_htmx",
+    "template_partials",
+    "components",
 ]
 
 if DEBUG:
@@ -80,6 +84,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 if DEBUG:
@@ -96,7 +101,10 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR / "config" / "templates",
+            BASE_DIR / "components" / "src-django-components",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -194,7 +202,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "config", "static"),
+    BASE_DIR / "config" / "static",
+    # os.path.join(BASE_DIR, "config", "static"),
+    BASE_DIR / "components" / "src-django-components",
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

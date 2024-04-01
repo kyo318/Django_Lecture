@@ -1,0 +1,32 @@
+{% load django_bootstrap5 static component_tags %}
+
+<!doctype html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8"/>
+    <title>
+      {% block title %}{% endblock %}
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css"/>
+    {% component_css_dependencies %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.11/htmx.min.js"></script>
+  </head>
+
+  <body hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
+    <main style="width: 400px; margin: 1em;">
+      <h1>유저: {{request.user}}</h1>
+      {% comment %} {% bootstrap_messages %} {% endcomment %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.bundle.min.js"></script>
+      {% component_js_dependencies %}
+      <script src="{% static 'core/toast-messages.js' %}"></script>
+
+      {% include "core/_messages_as_event.html" %}
+      {% block content %}{% endblock %}
+    </main>
+    {% block extra-script %}{% endblock %}
+    <div id="modal-container"></div>
+  </body>
+
+</html>
