@@ -163,8 +163,9 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-from django.core.exceptions import ImproperlyConfigured
+
 import sys
+from django.core.exceptions import ImproperlyConfigured
 
 EMAIL_HOST = env.str("EMAIL_HOST")
 

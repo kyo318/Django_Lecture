@@ -1,5 +1,4 @@
 django~=4.2.0
-black
 django-extensions~=3.2
 django-environ
 django-template-partials
@@ -7,3 +6,4 @@ django-htmx
 django-crispy-forms
 crispy-bootstrap5
 django-components
+pillow==10.3.0

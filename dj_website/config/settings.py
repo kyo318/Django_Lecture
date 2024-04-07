@@ -10,14 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 from environ import Env
-import sys
 
 env = Env()
 
@@ -35,7 +36,10 @@ else:
 # SECURITY WARNING: keep the secret key used in production secret!
 
 
-SECRET_KEY = env.str("SECRET_KEY", default="django-insecure-mu3d*-28&@fybnx0zgi1^!03u_szu8qg&ew32l1m37n8e6nh7&")
+SECRET_KEY = env.str(
+    "SECRET_KEY",
+    default="django-insecure-mu3d*-28&@fybnx0zgi1^!03u_szu8qg&ew32l1m37n8e6nh7&",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=True)
@@ -56,17 +60,18 @@ INSTALLED_APPS = [
     "template_partials",
     "django_htmx",
     "crispy_forms",
-	"crispy_bootstrap5",
+    "crispy_bootstrap5",
     "django_components",
     "core",
-    'accounts',
-    'chem',
+    "accounts",
+    "chem",
+    "photolog",
 ]
 
 if DEBUG:
-	INSTALLED_APPS += [
-		"debug_toolbar",
-	]
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -80,9 +85,9 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-	MIDDLEWARE = [
-		"debug_toolbar.middleware.DebugToolbarMiddleware",
-	] + MIDDLEWARE
+    MIDDLEWARE = [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ] + MIDDLEWARE
 
 ROOT_URLCONF = "config.urls"
 
@@ -158,6 +163,15 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "core" / "src-django-components",
 ]
+
+
+# Media files
+
+MEDIA_URL = "media/"
+
+MEDIA_ROOT = BASE_DIR / "mediafiles"
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -168,3 +182,21 @@ INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+EMAIL_HOST = env.str("EMAIL_HOST", default=None)
+
+if DEBUG and EMAIL_HOST is None:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    try:
+        EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+        EMAIL_PORT = env.int("EMAIL_PORT")
+        EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
+        EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
+        EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+        EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+        DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
+    except ImproperlyConfigured as e:
+        print("ERROR:", e, file=sys.stderr)
+        EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
