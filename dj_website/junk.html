@@ -1,0 +1,39 @@
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <!-- Dropzone.js CDN 링크 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/min/dropzone.min.css">
+</head>
+<body>
+    <h1>Upload DOE File</h1>
+    <!-- Crispy Form을 사용한 폼 렌더링 -->
+    <form action="{% url 'upload_doe_file' %}" method="post" class="dropzone" id="my-dropzone" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+    </form>
+    <div
+    id="drop_zone"
+    ondrop="dropHandler(event);"
+    ondragover="dragOverHandler(event);">
+    <p>Drag one or more files to this <i>drop zone</i>.</p>
+  </div>
+    <!-- Dropzone.js 및 필수 JavaScript 파일 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/min/dropzone.min.js"></script>
+    <script>
+        // Dropzone.js 초기화
+        Dropzone.autoDiscover = false;
+        var myDropzone = new Dropzone("#my-dropzone", {
+            url: "{% url 'upload_doe_file' %}",
+            paramName: "file", // 파일 이름 매개변수
+            maxFilesize: 5, // 최대 파일 크기 (MB)
+            acceptedFiles: ".xlsx", // 허용되는 파일 확장자
+            dictDefaultMessage: "Drag and drop or click to upload DOE file", // 기본 메시지
+        });
+    </script>
+</body>
+</html>
