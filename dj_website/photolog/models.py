@@ -65,8 +65,8 @@ class Photo(LifecycleModelMixin, models.Model):
         if pil_image.mode == "RGBA":
             pil_image = pil_image.convert("RGB")
 
-        thumb_name = splitext(image_file.name)[0] + "jpg"
-        thumb_file = ContentFile(b"", name="thum_name")
+        thumb_name = splitext(image_file.name)[0] + ".jpg"
+        thumb_file = ContentFile(b"", name=thumb_name)
         pil_image.save(thumb_file, "jpeg", quality=quality)
         return thumb_file
 
@@ -78,7 +78,7 @@ class Photo(LifecycleModelMixin, models.Model):
 
             if image_width > 1024 or image_extension not in (".jpg", ".jpeg"):
                 thumb_file = self.make_thumb(
-                    self.image_file,
+                    self.image.file,
                     max_width=1024,
                     max_height=1024,
                     quality=80,
