@@ -7,3 +7,4 @@ django-crispy-forms
 crispy-bootstrap5
 django-components
 pillow==10.3.0
+django-taggit==5.0.1

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import sys
 from pathlib import Path
 
+
 from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,7 +47,7 @@ DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = []
 
-
+TAGGIT_CASE_INSENSITIVE = env.bool("TAGGIT_CASE_INSENSITIVE", default=True)
 # Application definition
 
 INSTALLED_APPS = [
@@ -62,6 +63,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_components",
+    "taggit",
     "core",
     "accounts",
     "chem",

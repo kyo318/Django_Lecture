@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+  <style>
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <button id="toggle">구조검색</button>
+  <div id="ketcher_frame">
+    <div>
+      <iframe id="ifKetcher" src="ketcher/index.html" width="800" height="600"></iframe>
+    </div>
+    <div>
+      <button onclick="extractSMILES()">SMILES 추출</button>
+      <h2>추출된 SMILES</h2>
+      <textarea id="smiles_output" rows="5" cols="50"></textarea>
+    </div>
+  </div>
+
+  <script>
+    const ketcher_frame = document.querySelectorAll("#ketcher_frame");
+
+    ketcher_frame.forEach(el => el.classList.add("hidden"));
+
+    document.querySelector("#toggle").onclick = function() {
+      ketcher_frame.forEach(el => el.classList.toggle("hidden"));
+    };
+    function extractSMILES() {
+      let ketcherFrame = document.getElementById('ifKetcher');
+      let ketcher = ketcherFrame.contentWindow.ketcher;
+
+      const promise = ketcher.getSmiles(); 
+
+      promise.then(smiles => {
+          
+          console.log('SMILES:', smiles); 
+          document.getElementById('smiles_output').value = smiles;
+      }).catch(error => { 
+          console.error('Error getting SMILES:', error); 
+      });
+  }
+
+</script>
+
+</body>
+</html>

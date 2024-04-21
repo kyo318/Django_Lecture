@@ -68,10 +68,21 @@
     </footer>
     <script src="{% static 'htmx/1.9.11/htmx.min.js' %}"></script>
     <script src="{% static 'bootstrap/5.3.3/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'observe-node-insertion.js' %}"></script>
+    <script src="{% static 'hashtag-linkify.js' %}"></script>
     {% component_js_dependencies %}
     <script src="{% static 'toast-messages.js' %}"></script>
 
     {% include "_messages_as_event.html" %}
+
+    <script>
+      document.body.addEventListener("htmx:responseError", event => {
+        console.error("HTMX 요청 에러:", event.detail);
+        const message = event.detail.error;
+        const tag = "error"
+        htmx.trigger(document.body, "toast-message", {message, tag})
+      })
+    </script>
 
   </body>
 
